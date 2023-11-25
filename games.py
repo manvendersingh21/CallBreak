@@ -2,7 +2,22 @@ import pygame
 from sys import exit
 from PIL import Image
 import random
+def card():
+    shufflecards1=[]
+    shufflecards2=[]
+    shufflecards3=[]
+    shufflecards4=[]
+    
+    cards=['2C.png', '3C.png', '4C.png', '5C.png', '6C.png', '7C.png', '8C.png', '9C.png', '10C.png','2D.png', '3D.png', '4D.png', '5D.png', '6D.png', '7D.png', '8D.png', '9D.png', '10D.png',
+           '2S.png', '3S.png', '4S.png', '5S.png', '6S.png', '7S.png', '8S.png', '9S.png', '10S.png','2H.png', '3H.png', '4H.png', '5H.png', '6H.png', '7H.png', '8H.png', '9H.png', '10H.png',
+           'AH.png', 'AD.png', 'AS.png', 'AC.png', 'KH.png', 'KD.png', 'KS.png', 'KC.png', 'QH.png', 'QD.png', 'QS.png', 'QC.png', 'JH.png', 'JD.png', 'JS.png', 'JC.png']
+    random.shuffle(cards)
+    shufflecards1=cards[:13]
+    shufflecards2=cards[13:26]
+    shufflecards3=cards[26:39]
+    shufflecards4=cards[39:]
 
+    
 pygame.init()
 #set Game resolution
 screen = pygame.display.set_mode((1000,600))
@@ -73,17 +88,3 @@ def maingame():
         pygame.display.update()
         clock.tick(60)
 maingame()
-
-def cards():
-    shufflecards1=[]
-    shufflecards2=[]
-    shufflecards3=[]
-    shufflecards4=[]
-    
-    cards=['2C.png', '3C.png', '4C.png', '5C.png', '6C.png', '7C.png', '8C.png', '9C.png', '10C.png','2D.png', '3D.png', '4D.png', '5D.png', '6D.png', '7D.png', '8D.png', '9D.png', '10D.png',
-           '2S.png', '3S.png', '4S.png', '5S.png', '6S.png', '7S.png', '8S.png', '9S.png', '10S.png','2H.png', '3H.png', '4H.png', '5H.png', '6H.png', '7H.png', '8H.png', '9H.png', '10H.png',
-           'AH.png', 'AD.png', 'AS.png', 'AC.png', 'KH.png', 'KD.png', 'KS.png', 'KC.png', 'QH.png', 'QD.png', 'QS.png', 'QC.png', 'JH.png', 'JD.png', 'JS.png', 'JC.png']
-    random.shuffle(cards)
-    
-           
-           
