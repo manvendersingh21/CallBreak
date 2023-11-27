@@ -50,10 +50,11 @@ def cardsShuffle():
     return shufflecards1,shufflecards2,shufflecards3,shufflecards4  
 
 
-class Player():pygame.sprite.Sprite):
+class Player():#pygame.sprite.Sprite):
         shufflecards1,shufflecards2,shufflecards3,shufflecards4=cardsShuffle()
         def __init__(self, x, y, botcards,cardnum  ):
                 self.dis='shufflecards{}[{}]'.format(botcards, cardnum)
+                self.di=self.dis
                 self.image=pygame.image.load('PNG/'+self.dis)
                 self.scale=pygame.transform.scale(self.image,((self.image.get_width())*0.09,(self.image.get_height())*0.09)).convert_alpha()
         def display():
