@@ -32,9 +32,10 @@ b=bot1.get_height()
 bot=pygame.transform.scale(bot1,(w*0.04,b*0.04)).convert_alpha()
 screen.blit(Table_top,(0,0))
 def cardsShuffle():
-    cards=['2C.png', '3C.png', '4C.png', '5C.png', '6C.png', '7C.png', '8C.png', '9C.png', '10C.png','2D.png', '3D.png', '4D.png', '5D.png', '6D.png', '7D.png', '8D.png', '9D.png', '10D.png',
-           '2S.png', '3S.png', '4S.png', '5S.png', '6S.png', '7S.png', '8S.png', '9S.png', '10S.png','2H.png', '3H.png', '4H.png', '5H.png', '6H.png', '7H.png', '8H.png', '9H.png', '10H.png',
-           'AH.png', 'AD.png', 'AS.png', 'AC.png', 'KH.png', 'KD.png', 'KS.png', 'KC.png', 'QH.png', 'QD.png', 'QS.png', 'QC.png', 'JH.png', 'JD.png', 'JS.png', 'JC.png']
+    cards=['0C.png', '1C.png','2C.png', '3C.png', '4C.png', '5C.png', '6C.png', '7C.png', '8C.png', '9C.png', '10C.png','11C.png', '12C.png',
+           '0D.png', '1D.png','2D.png', '3D.png', '4D.png', '5D.png', '6D.png', '7D.png', '8D.png', '9D.png', '10D.png','11D.png', '12D.png',
+           '0S.png', '1S.png','2S.png', '3S.png', '4S.png', '5S.png', '6S.png', '7S.png', '8S.png', '9S.png', '10S.png','11S.png', '12S.png',
+           '0H.png', '1H.png','2H.png', '3H.png', '4H.png', '5H.png', '6H.png', '7H.png', '8H.png', '9H.png', '10H.png','11H.png', '12H.png']
     random.shuffle(cards)
     
     
@@ -70,6 +71,23 @@ def Gameplay(N):
         if shufflecards1[N][1]==card[1]:
             cardsdis=Player(500,300,2,N)
             cardsdis.display()
+def computer_player(Suit, Value, Cards,x,y, rotate):
+    print(Cards)
+    print(Suit)
+    dis=''
+    for card in Cards:
+        print(card[1])
+        
+        if card[1]==Suit:
+            print(1)
+            if int(card[0])>-1:
+                dis=card
+                print(dis)
+    disp=pygame.image.load('PNG/'+dis)
+    disp=pygame.transform.scale(disp,((disp.get_width())*0.09,(disp.get_height())*0.09)).convert_alpha()
+    
+    screen.blit(pygame.transform.rotate(disp,-180),disp.get_rect(midbottom=(x,y)))
+    
 
 def maingame():
     a='j'
@@ -112,30 +130,7 @@ def maingame():
             screen.blit(pygame.transform.rotate(bot,-90),bot.get_rect(midtop=(500,5)))
             screen.blit(pygame.transform.rotate(bot,-180),bot.get_rect(midright=(995,300)))
             #disp.get_rect(midbottom=(a,550))
-            '''
-            a=90
-            #yu=[]
-            for car in shufflecards1:
-                #yu.append('PNG/'+car)
-                
-                
-                dis=pygame.image.load('PNG/'+car)
-                 
-                w=dis.get_width()
-                b=dis.get_height()
-                disp=pygame.transform.scale(dis,(w*0.09,b*0.09)).convert_alpha()
-                recta=disp.get_rect(midbottom=(a,550))
-                rect.append(recta)
-                
-                #screen.blit(disp,recta)
-                a+=70
 
-
-
-            class carddistribution(pygame.sprite.Sprite):
-                def __init___(self, width, height, pos_x, pos_y ):
-                    self.image=pygame.surface([width, height])
-                    self.rect=self.image.get_rect(midbottom=(pos,550))'''
                     
 
 
@@ -210,17 +205,21 @@ def maingame():
             mouse_pos=pygame.mouse.get_pos()
             if recta13.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 screen.blit(disp13,disp13.get_rect(midbottom=(500,300)))
-                Gameplay(12)
+                computer_player(shufflecards1[12][1],shufflecards1[12][0], shufflecards2, 400,300,90)
+                
                 a=10000
                 
                 
-            else: screen.blit(disp13,recta13)
+            else:
+                screen.blit(disp13,recta13)
+                computer_player(shufflecards1[12][1],shufflecards1[12][0], shufflecards2, 400,300,90)
                     
             pygame.display.update()
             for event in pygame.event.get():
                  if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+                    
                     
                     
             
