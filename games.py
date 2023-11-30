@@ -2,16 +2,7 @@ import pygame
 from sys import exit
 from PIL import Image
 import random
-
     
-    
-    
-
-
-shufflecards1=[]
-shufflecards2=[]
-shufflecards3=[]
-shufflecards4=[]    
 pygame.init()
 #set Game resolution
 screen = pygame.display.set_mode((1000,600))
@@ -32,16 +23,22 @@ b=bot1.get_height()
 bot=pygame.transform.scale(bot1,(w*0.04,b*0.04)).convert_alpha()
 screen.blit(Table_top,(0,0))
 def cardsShuffle():
-    cards=['0C.png', '1C.png','2C.png', '3C.png', '4C.png', '5C.png', '6C.png', '7C.png', '8C.png', '9C.png', '10C.png','11C.png', '12C.png',
-           '0D.png', '1D.png','2D.png', '3D.png', '4D.png', '5D.png', '6D.png', '7D.png', '8D.png', '9D.png', '10D.png','11D.png', '12D.png',
-           '0S.png', '1S.png','2S.png', '3S.png', '4S.png', '5S.png', '6S.png', '7S.png', '8S.png', '9S.png', '10S.png','11S.png', '12S.png',
-           '0H.png', '1H.png','2H.png', '3H.png', '4H.png', '5H.png', '6H.png', '7H.png', '8H.png', '9H.png', '10H.png','11H.png', '12H.png']
+    shufflecards1=[]
+    shufflecards2=[]
+    shufflecards3=[]
+    shufflecards4=[]
+    cards=['00C.png', '01C.png','02C.png', '03C.png', '04C.png', '05C.png', '06C.png', '07C.png', '08C.png', '09C.png', '10C.png','11C.png', '12C.png',
+           '00D.png', '01D.png','02D.png', '03D.png', '04D.png', '05D.png', '06D.png', '07D.png', '08D.png', '09D.png', '10D.png','11D.png', '12D.png',
+           '00S.png', '01S.png','02S.png', '03S.png', '04S.png', '05S.png', '06S.png', '07S.png', '08S.png', '09S.png', '10S.png','11S.png', '12S.png',
+           '00H.png', '01H.png','02H.png', '03H.png', '04H.png', '05H.png', '06H.png', '07H.png', '08H.png', '09H.png', '10H.png','11H.png', '12H.png']
     random.shuffle(cards)
-    
+    random.shuffle(cards)
+    random.shuffle(cards)    
     
     shufflecards1=cards[:13]
-    
     shufflecards1.sort()
+    
+    print(shufflecards1)
     shufflecards2=cards[13:26]
     
     shufflecards3=cards[26:39]
@@ -73,21 +70,39 @@ def Gameplay(N):
             cardsdis.display()
 def computer_player(Suit, Value, Cards,x,y, rotate):
     print(Cards)
-    print(Suit)
-    dis=''
+    print(Value)
+    print(Suit,'gvgh')
+    dis='99'
+    a=True
     for card in Cards:
-        print(card[1])
+        print(card)
         
-        if card[1]==Suit:
-            print(1)
-            if int(card[0])>-1:
+        if card[2]==Suit:
+            a=False
+            if int(card[0:2])==12:
                 dis=card
-                print(dis)
+                
+            elif int(card[0:2])>Value:
+                dis=card
+                break
+            elif int(card[0:2])<int(dis[0:2]):
+                dis=card
+                
+                
+                
+        elif card[2]=='S' and a ==True:
+            dis=card
+            
+        elif a:
+            dis=card
+            
+            
+    print(dis,'h')
     disp=pygame.image.load('PNG/'+dis)
     disp=pygame.transform.scale(disp,((disp.get_width())*0.09,(disp.get_height())*0.09)).convert_alpha()
     
     screen.blit(pygame.transform.rotate(disp,-180),disp.get_rect(midbottom=(x,y)))
-    
+    return dis
 
 def maingame():
     a='j'
@@ -205,14 +220,16 @@ def maingame():
             mouse_pos=pygame.mouse.get_pos()
             if recta13.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 screen.blit(disp13,disp13.get_rect(midbottom=(500,300)))
-                computer_player(shufflecards1[12][1],shufflecards1[12][0], shufflecards2, 400,300,90)
+                dis=computer_player(shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards2, 400,300,90)
+                dis1=computer_player(shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards3, 400,300,90)
                 
                 a=10000
-                
+                shufflecards2.remove(dis)
+                print(shufflecards2)
                 
             else:
                 screen.blit(disp13,recta13)
-                computer_player(shufflecards1[12][1],shufflecards1[12][0], shufflecards2, 400,300,90)
+                
                     
             pygame.display.update()
             for event in pygame.event.get():
