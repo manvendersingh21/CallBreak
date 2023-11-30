@@ -22,6 +22,8 @@ w=bot1.get_width()
 b=bot1.get_height()
 bot=pygame.transform.scale(bot1,(w*0.04,b*0.04)).convert_alpha()
 screen.blit(Table_top,(0,0))
+
+animation_cooldown=1500
 def cardsShuffle():
     shufflecards1=[]
     shufflecards2=[]
@@ -105,6 +107,7 @@ def computer_player(Suit, Value, Cards,x,y, rotate):
     return dis
 
 def maingame():
+    
     a='j'
     
     shufflecards1,shufflecards2,shufflecards3,shufflecards4=cardsShuffle()
@@ -136,6 +139,7 @@ def maingame():
         if  True in pygame.key.get_pressed():
             a='k'
     a=930
+    last_time=pygame.time.get_ticks()
     while True:
         
         #now inserting the picture in the game 
@@ -222,10 +226,14 @@ def maingame():
                 screen.blit(disp13,disp13.get_rect(midbottom=(500,300)))
                 dis=computer_player(shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards2, 400,300,90)
                 dis1=computer_player(shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards3, 400,300,90)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
                 
-                a=10000
-                shufflecards2.remove(dis)
+                    a=10000
+                    shufflecards2.remove(dis)
+                    last_time=current_time
                 print(shufflecards2)
+                    
                 
             else:
                 screen.blit(disp13,recta13)
