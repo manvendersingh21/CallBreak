@@ -22,8 +22,8 @@ w=bot1.get_width()
 b=bot1.get_height()
 bot=pygame.transform.scale(bot1,(w*0.04,b*0.04)).convert_alpha()
 screen.blit(Table_top,(0,0))
+animation_cooldown=200
 
-animation_cooldown=1500
 def cardsShuffle():
     shufflecards1=[]
     shufflecards2=[]
@@ -49,71 +49,66 @@ def cardsShuffle():
     
     return shufflecards1,shufflecards2,shufflecards3,shufflecards4  
 
-
-class Player():#pygame.sprite.Sprite):
-        shufflecards1,shufflecards2,shufflecards3,shufflecards4=cardsShuffle()
-        def __init__(self, x, y, botcards,cardnum  ):
-                self.dis='shufflecards{}[{}]'.format(botcards, cardnum)
-                self.di=self.dis
-                self.image=pygame.image.load('PNG/'+self.dis)
-                self.scale=pygame.transform.scale(self.image,((self.image.get_width())*0.09,(self.image.get_height())*0.09)).convert_alpha()
-        def display():
-                screen.blit(self.scale,self.scale.get_rect(midbottom=((x),y)))
 		
 		
 
-def Gameplay(N): 
-    x=0
-    suits=['C','S','D','H']
-    shufflecards1,shufflecards2,shufflecards3,shufflecards4=cardsShuffle()
-    for card in shufflecards2:
-        if shufflecards1[N][1]==card[1]:
-            cardsdis=Player(500,300,2,N)
-            cardsdis.display()
-def computer_player(Suit, Value, Cards,x,y, rotate):
+
+def computer_player(Card_played1,Suit, Value, Cards,x,y, rotate):
     print(Cards)
     print(Value)
     print(Suit,'gvgh')
-    dis='99'
+    dis='99t'
     a=True
+    b=True
+    c=True
     for card in Cards:
-        print(card)
-        
+        print(card[2],'ffghvhgvh')
         if card[2]==Suit:
             a=False
-            if int(card[0:2])==12:
-                dis=card
-                
-            elif int(card[0:2])>Value:
-                dis=card
-                break
-            elif int(card[0:2])<int(dis[0:2]):
-                dis=card
-                
-                
-                
-        elif card[2]=='S' and a ==True:
-            dis=card
+            c=False
             
-        elif a:
+                
+            if int(card[0:2])>Value and dis[2]==Suit:
+                if int(card[0:2])>int(dis[0:2]):
+                    dis=card
+                    d=False
+                highest_card=card
+               
+                
+            elif int(card[0:2])<int(dis[0:2]) and b and dis[2]==Suit:
+                highest_card=Card_played1
+                dis=card
+            else:
+                dis=card
+                if int(card[0:2])>Value:
+                    highest_card=card
+                else:
+                    highest_card=Card_played1
+                
+        elif card[2]=='S' and a:
             dis=card
+            highest_card=card
+            print('123')
+            c=False
+        elif c:
+            dis=card
+            highest_card=Card_played1
             
             
     print(dis,'h')
     disp=pygame.image.load('PNG/'+dis)
     disp=pygame.transform.scale(disp,((disp.get_width())*0.09,(disp.get_height())*0.09)).convert_alpha()
     
-    screen.blit(pygame.transform.rotate(disp,-180),disp.get_rect(midbottom=(x,y)))
+    screen.blit(pygame.transform.rotate(disp,rotate),disp.get_rect(midbottom=(x,y)))
     return dis
+
+
 
 def maingame():
     
     a='j'
-    
     shufflecards1,shufflecards2,shufflecards3,shufflecards4=cardsShuffle()
-    
-    
-    rect=[]
+    count_played=0
     
 
     while True:
@@ -138,103 +133,301 @@ def maingame():
                 a='k'
         if  True in pygame.key.get_pressed():
             a='k'
-    a=930
+    a,b,c,d,e,f,g,h,i,j,k,l,m=90,160,230,300,370,440,510,580,650,720,790,860,930
     last_time=pygame.time.get_ticks()
     while True:
         
         #now inserting the picture in the game 
             screen.blit(Table_top,(0,0))
-            
             screen.blit(bot,bot.get_rect(midleft=(5,300)))
             screen.blit(pygame.transform.rotate(bot,-90),bot.get_rect(midtop=(500,5)))
             screen.blit(pygame.transform.rotate(bot,-180),bot.get_rect(midright=(995,300)))
-            #disp.get_rect(midbottom=(a,550))
-
-                    
-
-
-
-
+            mouse_pos=pygame.mouse.get_pos()
             # 1st card
             dis1=pygame.image.load('PNG/'+shufflecards1[0])
             disp1=pygame.transform.scale(dis1,((dis1.get_width())*0.09,(dis1.get_height())*0.09)).convert_alpha()
-            recta1=disp1.get_rect(midbottom=(90,550))
-            screen.blit(disp1,recta1)
+            recta1=disp1.get_rect(midbottom=(a,550))
+            if recta1.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp1,disp1.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[0],shufflecards1[0][2],int(shufflecards1[0][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[0],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[0],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    a=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+                    
+            else:
+            
+                screen.blit(disp1,recta1)
+
             #2nd card
             dis2=pygame.image.load('PNG/'+shufflecards1[1])
             disp2=pygame.transform.scale(dis2,((dis2.get_width())*0.09,(dis2.get_height())*0.09)).convert_alpha()
-            recta2=disp2.get_rect(midbottom=(160,550))
-            screen.blit(disp2,recta2)
+            recta2=disp2.get_rect(midbottom=(b,550))
+            if recta2.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp2,disp2.get_rect(midbottom=(b,300)))
+                dis=computer_player(shufflecards1[1],shufflecards1[1][2],int(shufflecards1[1][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[1],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[1],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    b=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp2,recta2)
             #3rd card
             dis3=pygame.image.load('PNG/'+shufflecards1[2])
             disp3=pygame.transform.scale(dis3,((dis3.get_width())*0.09,(dis3.get_height())*0.09)).convert_alpha()
-            recta3=disp3.get_rect(midbottom=(230,550))
-            screen.blit(disp3,recta3)
+            recta3=disp3.get_rect(midbottom=(c,550))
+            if recta3.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp3,disp3.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[2],shufflecards1[2][2],int(shufflecards1[2][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[2],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[2],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    c=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp3,recta3)
+            
             #4th card
             dis4=pygame.image.load('PNG/'+shufflecards1[3])
             disp4=pygame.transform.scale(dis4,((dis4.get_width())*0.09,(dis4.get_height())*0.09)).convert_alpha()
-            recta4=disp4.get_rect(midbottom=((300),550))
-            screen.blit(disp4,recta4)
+            recta4=disp4.get_rect(midbottom=(d,550))
+            if recta4.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp4,disp4.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[3],shufflecards1[3][2],int(shufflecards1[3][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[3],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[3],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    d=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp4,recta4)
             #5th card
             dis5=pygame.image.load('PNG/'+shufflecards1[4])
             disp5=pygame.transform.scale(dis5,((dis5.get_width())*0.09,(dis5.get_height())*0.09)).convert_alpha()
-            recta5=disp5.get_rect(midbottom=((370),550))
-            screen.blit(disp5,recta5)
+            recta5=disp5.get_rect(midbottom=(e,550))
+            if recta5.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp5,disp5.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[4],shufflecards1[4][2],int(shufflecards1[5][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[4],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[4],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    e=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp5,recta5)
+
             #6th card
             dis6=pygame.image.load('PNG/'+shufflecards1[5])
             disp6=pygame.transform.scale(dis6,((dis6.get_width())*0.09,(dis6.get_height())*0.09)).convert_alpha()
-            recta6=disp6.get_rect(midbottom=((440),550))
-            screen.blit(disp6,recta6)
+            recta6=disp6.get_rect(midbottom=(f,550))
+            if recta6.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp6,disp6.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[5],shufflecards1[5][2],int(shufflecards1[5][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[5],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[5],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    f=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp6,recta6)
+            
+
             #7th card
             dis7=pygame.image.load('PNG/'+shufflecards1[6])
             disp7=pygame.transform.scale(dis7,((dis7.get_width())*0.09,(dis7.get_height())*0.09)).convert_alpha()
-            recta7=disp7.get_rect(midbottom=((510),550))
-            screen.blit(disp7,recta7)
+            recta7=disp7.get_rect(midbottom=(g,550))
+            if recta7.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp7,disp7.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[6],shufflecards1[6][2],int(shufflecards1[6][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[6],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[6],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    g=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp7,recta7)
+
             #8th card
             dis8=pygame.image.load('PNG/'+shufflecards1[7])
             disp8=pygame.transform.scale(dis8,((dis8.get_width())*0.09,(dis8.get_height())*0.09)).convert_alpha()
-            recta8=disp8.get_rect(midbottom=((580),550))
-            screen.blit(disp8,recta8)
+            recta8=disp8.get_rect(midbottom=(h,550))
+            if recta8.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp8,disp8.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[7],shufflecards1[7][2],int(shufflecards1[7][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[7],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[7],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    h=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp8,recta8)
+
             #9th card
             dis9=pygame.image.load('PNG/'+shufflecards1[8])
             disp9=pygame.transform.scale(dis9,((dis9.get_width())*0.09,(dis9.get_height())*0.09)).convert_alpha()
-            recta9=disp9.get_rect(midbottom=((650),550))
-            screen.blit(disp9,recta9)
+            recta9=disp9.get_rect(midbottom=(i,550))
+            if recta9.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp9,disp9.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[8],shufflecards1[8][2],int(shufflecards1[8][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[8],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[8],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    i=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp9,recta9)
+
             #10th card
             dis10=pygame.image.load('PNG/'+shufflecards1[9])
             disp10=pygame.transform.scale(dis10,((dis10.get_width())*0.09,(dis10.get_height())*0.09)).convert_alpha()
-            recta10=disp10.get_rect(midbottom=((720),550))
-            screen.blit(disp10,recta10)
+            recta10=disp10.get_rect(midbottom=(j,550))
+            if recta10.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp10,disp10.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[9],shufflecards1[9][2],int(shufflecards1[9][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[9],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[9],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    j=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp10,recta10)
+
             #11th card
             dis11=pygame.image.load('PNG/'+shufflecards1[10])
             disp11=pygame.transform.scale(dis11,((dis11.get_width())*0.09,(dis11.get_height())*0.09)).convert_alpha()
-            recta11=disp11.get_rect(midbottom=((790),550))
-            screen.blit(disp11,recta11)
+            recta11=disp11.get_rect(midbottom=(k,550))
+            if recta11.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+                screen.blit(disp11,disp11.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[10],shufflecards1[10][2],int(shufflecards1[10][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[10],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[10],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    k=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
+            else:
+                screen.blit(disp11,recta11)
+
             #12th card
             dis12=pygame.image.load('PNG/'+shufflecards1[11])
             disp12=pygame.transform.scale(dis12,((dis12.get_width())*0.09,(dis12.get_height())*0.09)).convert_alpha()
-            recta12=disp12.get_rect(midbottom=((860),550))
-            screen.blit(disp12,recta12)
-            #13th card
+            recta12=disp12.get_rect(midbottom=(l,550))
+            if recta12.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
             
-            
-            dis13=pygame.image.load('PNG/'+shufflecards1[12])
-            disp13=pygame.transform.scale(dis13,((dis13.get_width())*0.09,(dis13.get_height())*0.09)).convert_alpha()
-            recta13=disp13.get_rect(midbottom=(a,550))
-            mouse_pos=pygame.mouse.get_pos()
-            if recta13.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
-                screen.blit(disp13,disp13.get_rect(midbottom=(500,300)))
-                dis=computer_player(shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards2, 400,300,90)
-                dis1=computer_player(shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards3, 400,300,90)
+                screen.blit(disp12,disp12.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[11],shufflecards1[11][2],int(shufflecards1[11][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[11],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[11],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
                 current_time=pygame.time.get_ticks()
                 if current_time - last_time>= animation_cooldown:
-                
-                    a=10000
+                    l=10000
                     shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
                     last_time=current_time
-                print(shufflecards2)
+                    count_played+=1
                     
-                
+            else:
+                screen.blit(disp12,recta12)
+            
+
+            #13th card
+            dis13=pygame.image.load('PNG/'+shufflecards1[12])
+            disp13=pygame.transform.scale(dis13,((dis13.get_width())*0.09,(dis13.get_height())*0.09)).convert_alpha()
+            recta13=disp13.get_rect(midbottom=(m,550))
+            
+            if recta13.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
+            
+                screen.blit(disp13,disp13.get_rect(midbottom=(370,300)))
+                dis=computer_player(shufflecards1[12],shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards2, 440,300,0)
+                dis1=computer_player(shufflecards1[12],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2=computer_player(shufflecards1[12],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                current_time=pygame.time.get_ticks()
+                if current_time - last_time>= animation_cooldown:
+                    m=10000
+                    shufflecards2.remove(dis)
+                    shufflecards3.remove(dis1)
+                    shufflecards4.remove(dis2)
+                    last_time=current_time
+                    count_played+=1
+                    
             else:
                 screen.blit(disp13,recta13)
                 
