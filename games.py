@@ -26,6 +26,19 @@ bot=pygame.transform.scale(bot1,(w*0.04,b*0.04)).convert_alpha()
 screen.blit(Table_top,(0,0))
 animation_cooldown=200
 
+def scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4):
+    if highest_card in shufflecards1:
+        s1+=1
+    elif highest_card in shufflecards2:
+        s2+=1
+    elif highest_card in shufflecards3:
+        s3+=1
+    elif highest_card in shufflecards4:
+        s4+=1
+    return s1,s2,s3,s4
+    
+
+
 def cardsShuffle():
     shufflecards1=[]
     shufflecards2=[]
@@ -55,46 +68,96 @@ def cardsShuffle():
 		
 
 
-def computer_player(Card_played1,Suit, Value, Cards,x,y, rotate):
+def computer_player(Card_played1,Suit, Value, Cards,x,y, rotate,n):
     print(Cards)
     print(Value)
     print(Suit,'gvgh')
     dis='99t'
+    
     a=True
     b=True
     c=True
-    for card in Cards:
-        print(card[2],'ffghvhgvh')
-        if card[2]==Suit:
-            a=False
-            c=False
-            
-                
-            if int(card[0:2])>Value and dis[2]==Suit:
-                if int(card[0:2])>int(dis[0:2]):
+    d=True
+    if n==0:
+        for card in Cards:
+            print(card[2],'ffghvhgvh')
+            if card[2]==Suit:
+                a=False
+                c=False
+                if int(card[0:2])>Value and dis[2]==Suit:
+                    if int(card[0:2])>int(dis[0:2]):
+                        dis=card
+                        b=False
+                        d=False
+                        highest_card=card
+                elif int(card[0:2])<int(dis[0:2]) and b and dis[2]==Suit:
+                    highest_card=Card_played1
                     dis=card
                     d=False
-                highest_card=card
-               
-                
-            elif int(card[0:2])<int(dis[0:2]) and b and dis[2]==Suit:
-                highest_card=Card_played1
-                dis=card
-            else:
-                dis=card
-                if int(card[0:2])>Value:
+                elif d:
+                    d=False
+                    dis=card
+                    if int(card[0:2])>Value:
+                        highest_card=card
+                        b=False
+                    else:
+                        highest_card=Card_played1
+            elif card[2]=='S' and a:
+                if card[0:2]<int(dis[0:2]) and dis[2]=='S':
+                    dis=card
                     highest_card=card
-                else:
+                elif dis[2]!='S':
+                    dis=card
+                    highest_card=card
+                c=False
+            elif c:
+                if card[0:2]<int(dis[0:2]) and dis[2]!='t':
+                    dis=card
+                    highest_card=Card_played1
+                elif dis[2]=='t':
+                    dis=card
                     highest_card=Card_played1
                 
-        elif card[2]=='S' and a:
-            dis=card
-            highest_card=card
-            print('123')
-            c=False
-        elif c:
-            dis=card
-            highest_card=Card_played1
+    elif n==1:
+        for card in Cards:
+            print(card[2],'ffghvhgvh')
+            if card[2]==Suit:
+                a=False
+                c=False
+                if highest_card[2]!=Suit and highest_card[2]=='S' and (int(dis[0:2])<14):
+                    if int(card[0:2])<int(dis[0:2]):
+                        dis=card
+                        highest_card=Card_played1
+                    
+                elif int(card[0:2])>Value and dis[2]==Suit:
+                    if int(card[0:2])>int(dis[0:2]):
+                        dis=card
+                        b=False
+                        highest_card=card
+                   
+                    
+                elif int(card[0:2])<int(dis[0:2]) and b and dis[2]==Suit:
+                    highest_card=Card_played1
+                    dis=card
+                else:
+                    dis=card
+                    if int(card[0:2])>Value:
+                        highest_card=card
+                    else:
+                        highest_card=Card_played1
+                    
+            elif card[2]=='S' and a:
+                if highest_card[2]=="S":
+                    if int(card[0:2])>int(dis[0:2]):
+                        dis=card
+                    dis=card
+                highest_card=card
+                print('123')
+                c=False
+            elif c:
+                dis=card
+                highest_card=Card_played1
+
             
             
     print(dis,'h')
@@ -102,7 +165,7 @@ def computer_player(Card_played1,Suit, Value, Cards,x,y, rotate):
     disp=pygame.transform.scale(disp,((disp.get_width())*0.09,(disp.get_height())*0.09)).convert_alpha()
     
     screen.blit(pygame.transform.rotate(disp,rotate),disp.get_rect(midbottom=(x,y)))
-    return dis
+    return dis, highest_card
 
 
 
@@ -151,13 +214,14 @@ def maingame():
             disp1=pygame.transform.scale(dis1,((dis1.get_width())*0.09,(dis1.get_height())*0.09)).convert_alpha()
             recta1=disp1.get_rect(midbottom=(a,550))
             if recta1.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
-            
+                n=0
                 screen.blit(disp1,disp1.get_rect(midbottom=(370,300)))
                 dis=computer_player(shufflecards1[0],shufflecards1[0][2],int(shufflecards1[0][0:2]), shufflecards2, 440,300,0)
                 dis1=computer_player(shufflecards1[0],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
                 dis2=computer_player(shufflecards1[0],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
                 current_time=pygame.time.get_ticks()
                 if current_time - last_time>= animation_cooldown:
+                    s1,s2,s3,s4=scorecount(0,0,0,0, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
                     a=10000
                     shufflecards2.remove(dis)
                     shufflecards3.remove(dis1)
@@ -175,13 +239,14 @@ def maingame():
             disp2=pygame.transform.scale(dis2,((dis2.get_width())*0.09,(dis2.get_height())*0.09)).convert_alpha()
             recta2=disp2.get_rect(midbottom=(b,550))
             if recta2.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
-            
+                
                 screen.blit(disp2,disp2.get_rect(midbottom=(b,300)))
-                dis=computer_player(shufflecards1[1],shufflecards1[1][2],int(shufflecards1[1][0:2]), shufflecards2, 440,300,0)
-                dis1=computer_player(shufflecards1[1],dis[2],int(dis[0:2]), shufflecards3, 510,300,0)
-                dis2=computer_player(shufflecards1[1],dis1[2],int(dis1[0:2]), shufflecards4, 580,300,0)
+                dis, highest_card=computer_player(shufflecards1[1],shufflecards1[1][2],int(shufflecards1[1][0:2]), shufflecards2, 440,300,0)
+                dis1,highest_card=computer_player(highest_card,shufflecards1[1][2],int(dis[0:2]), shufflecards3, 510,300,0)
+                dis2,highest_card=computer_player(highest_card,shufflecards1[1][2],int(dis1[0:2]), shufflecards4, 580,300,0)
                 current_time=pygame.time.get_ticks()
                 if current_time - last_time>= animation_cooldown:
+                    scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
                     b=10000
                     shufflecards2.remove(dis)
                     shufflecards3.remove(dis1)
