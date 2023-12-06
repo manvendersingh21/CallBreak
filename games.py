@@ -12,6 +12,8 @@ pygame.display.set_caption('CallBreak')
 clock=pygame.time.Clock()
 # Font inside the Game
 font = pygame.font.Font('fontsss/Pixeltype.ttf', 50)
+#calling sounds
+start_sound=pygame.mixer.Sound("music/start.mp3")
 #calling picture in the Game
 Table_top=pygame.image.load('PNG/table.jpg').convert()#convert_alpha for cards
 Writing= Writing= font.render('CallBreak',False,'Black')
@@ -115,7 +117,7 @@ def maingame():
         if a=='k':
             break
         
-        
+        start_sound.play()
         screen.blit(Writing,(500,20))
         screen.blit(start,(20,300))
         pygame.display.update()
@@ -133,6 +135,7 @@ def maingame():
                 a='k'
         if  True in pygame.key.get_pressed():
             a='k'
+    start_sound.stop()
     a,b,c,d,e,f,g,h,i,j,k,l,m=90,160,230,300,370,440,510,580,650,720,790,860,930
     last_time=pygame.time.get_ticks()
     while True:
@@ -430,6 +433,9 @@ def maingame():
                     
             else:
                 screen.blit(disp13,recta13)
+            if count_played==13:
+                break
+                
                 
                     
             pygame.display.update()
@@ -437,7 +443,18 @@ def maingame():
                  if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-                    
+    while True:
+            End_game= font.render('The Game is over',False,'Black')
+            screen.blit(Table_top,(0,0))
+            screen.blit(End_game,(400,300))
+            pygame.display.update()
+
+        
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+
                     
                     
             
