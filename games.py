@@ -32,7 +32,7 @@ w=bot1.get_width()
 b=bot1.get_height()
 bot=pygame.transform.scale(bot1,(w*0.04,b*0.04)).convert_alpha()
 screen.blit(Table_top,(0,0))
-animation_cooldown=1000
+animation_cooldown=3000
 
 def scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4):
     if highest_card in shufflecards1:
@@ -208,9 +208,7 @@ def computer_player(highest_Card,Card_played1,Suit, Value, Cards,x,y, rotate,n):
 
 
 def maingame():
-    bot_1= font.render('bot 1',False,'Black')
-    bot_2= font.render('bot 2',False,'Black')
-    bot_3= font.render('bot 3',False,'Black')
+    
     
     a='j'
     shufflecards1,shufflecards2,shufflecards3,shufflecards4=cardsShuffle()
@@ -248,16 +246,22 @@ def maingame():
     start_sound.stop()
     a,b,c,d,e,f,g,h,i,j,k,l,m=90,160,230,300,370,440,510,580,650,720,790,860,930
     s1,s2,s3,s4=0,0,0,0
+    cn1,cn2,cn3,cn4=0,0,0,0
     
     count_number=0
     shuffle_sound.play()
     while True:
+            player_1=font.render('player | ({}/{})'.format(s1,cn1),False,'Black')
+            bot_1= font.render('bot 1 | ({}/{})'.format(s2,cn2),False,'Black')
+            bot_2= font.render('bot 2 | ({}/{})'.format(s3,cn3),False,'Black')
+            bot_3= font.render('bot 3 | ({}/{})'.format(s4,cn4),False,'Black')
             last_time=pygame.time.get_ticks()
         
             
         
-        #now inserting the picture in the game 
+            #now inserting the picture in the game 
             screen.blit(Table_top,(0,0))
+            screen.blit(player_1,player_1.get_rect(midtop=(500,400)))
             screen.blit(bot_1,bot_1.get_rect(topright=(920,300)))
             screen.blit(bot_2,bot_2.get_rect(topleft=(500,80)))
             screen.blit(bot_3,bot_3.get_rect(topleft=(80,300)))
