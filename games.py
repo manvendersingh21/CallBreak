@@ -22,7 +22,7 @@ click_sound=pygame.mixer.Sound("music/click.mp3")
 #calling picture in the Game
 Table_top=pygame.image.load('PNG/table.jpg').convert()#convert_alpha for cards
 Writing= Writing= font.render('CallBreak',False,'Black')
-start= font.render('Click anywhere or Press any key on the screen to start the game',False,'Black')
+start= font.render('Press any key or Click anywhere on the screen to start the game',False,'Black')
 name= font.render('Manvender Singh',True,'Black')
 tuid= font.render('916307489',True,'Black')
 
@@ -149,32 +149,42 @@ def computer_player(highest_Card,Card_played1,Suit, Value, Cards,x,y, rotate,n):
     elif n!=0:
         for card in Cards:
             
-            if card[2]==Suit:
+            if card[2]==Suit and highest_Card[2]==Suit:
                 a=False
                 c=False
-                if highest_Card[2]!=Suit and highest_Card[2]=='S' and (int(dis[0:2])<14):
-                    if int(card[0:2])<int(dis[0:2]):
-                        dis=card
-                        highest_card=highest_Card
-                    
-                elif int(card[0:2])>Value and dis[2]==Suit:
+                if int(card[0:2])>int(highest_Card[0:2])and dis[2]==Suit:
                     if int(card[0:2])>int(dis[0:2]):
                         dis=card
                         b=False
+                        d=False
                         highest_card=card
-                   
-                    
                 elif int(card[0:2])<int(dis[0:2]) and b and dis[2]==Suit:
                     highest_card=highest_Card
                     dis=card
+                    d=False
                 elif d:
                     d=False
                     dis=card
-                    if int(card[0:2])>Value:
+                    if int(card[0:2])>int(highest_Card[0:2]):
                         highest_card=card
                         b=False
                     else:
-                        highest_card=Card_played1
+                        highest_card=highest_Card
+            elif card[2]=='S' and a:
+                if int(card[0:2])<int(dis[0:2]) and dis[2]=='S':
+                    dis=card
+                    highest_card=card
+                elif dis[2]!='S':
+                    dis=card
+                    highest_card=card
+                c=False
+            elif c:
+                if int(card[0:2])<int(dis[0:2]) and dis[2]!='t':
+                    dis=card
+                    highest_card=highest_Card
+                elif dis[2]=='t':
+                    dis=card
+                    highest_card=highest_Card
                     
             elif card[2]=='S' and a:
                 if int(card[0:2])<int(dis[0:2]) and dis[2]=='S':
@@ -700,11 +710,11 @@ def maingame():
             
             
 
-            other_playe_score=font.render('Bot1 score{}. Bot2 score{}. Bot3 score{}. Player score{}.'.format(s2,s3,s4,s1),True,'Black')
+            other_playe_score=font.render('Bot1 score({}). Bot2 score({}). Bot3 score({}). Player score({}).'.format(s2,s3,s4,s1),True,'Black')
             screen.blit(other_playe_score,(100,200))
-            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(100,200)))
-            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(100,200)),6)
-            screen.blit(other_playe_score,(other_playe_score.get_rect(topleft=(100,200))))
+            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(20,200)))
+            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(20,200)),6)
+            screen.blit(other_playe_score,(other_playe_score.get_rect(topleft=(20,200))))
             restart=font.render("Press space to restart the game",True,"Black").convert_alpha()
             rectangle=restart.get_rect(midbottom=(450,550))
             screen.blit(restart, rectangle)
