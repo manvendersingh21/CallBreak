@@ -3,7 +3,6 @@ from sys import exit
 from PIL import Image
 import random
 
-    
 pygame.init()
 #set Game resolution
 screen = pygame.display.set_mode((1000,600))
@@ -15,25 +14,24 @@ clock=pygame.time.Clock()
 font = pygame.font.Font('fontsss/Pixeltype.ttf', 50)
 #calling sounds
 start_sound=pygame.mixer.Sound("music/start.mp3")
+shuffle_sound=pygame.mixer.Sound("music/shuffle.mp3")
 mid_sound=pygame.mixer.Sound("music/mid.mp3")
 click_sound=pygame.mixer.Sound("music/click.mp3")
 
 #calling picture in the Game
 Table_top=pygame.image.load('PNG/table.jpg').convert()#convert_alpha for cards
 Writing= Writing= font.render('CallBreak',False,'Black')
-start= font.render('Click anywhere or Press any key on the screen to start the game',False,'Black')
+start= font.render('Press any key or Click anywhere on the screen to start the game',False,'Black')
 name= font.render('Manvender Singh',True,'Black')
 tuid= font.render('916307489',True,'Black')
-bot_1= font.render('bot 1',False,'Black')
-bot_2= font.render('bot 2',False,'Black')
-bot_3= font.render('bot 3',False,'Black')
+
 bot1=pygame.image.load("PNG/back.png")
 bot1=pygame.transform.rotate(bot1,-90) 
 w=bot1.get_width()
 b=bot1.get_height()
 bot=pygame.transform.scale(bot1,(w*0.04,b*0.04)).convert_alpha()
 screen.blit(Table_top,(0,0))
-animation_cooldown=200
+animation_cooldown=3000
 
 def scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4):
     if highest_card in shufflecards1:
@@ -150,32 +148,42 @@ def computer_player(highest_Card,Card_played1,Suit, Value, Cards,x,y, rotate,n):
     elif n!=0:
         for card in Cards:
             
-            if card[2]==Suit:
+            if card[2]==Suit and highest_Card[2]==Suit:
                 a=False
                 c=False
-                if highest_Card[2]!=Suit and highest_Card[2]=='S' and (int(dis[0:2])<14):
-                    if int(card[0:2])<int(dis[0:2]):
-                        dis=card
-                        highest_card=highest_Card
-                    
-                elif int(card[0:2])>Value and dis[2]==Suit:
+                if int(card[0:2])>int(highest_Card[0:2])and dis[2]==Suit:
                     if int(card[0:2])>int(dis[0:2]):
                         dis=card
                         b=False
+                        d=False
                         highest_card=card
-                   
-                    
                 elif int(card[0:2])<int(dis[0:2]) and b and dis[2]==Suit:
                     highest_card=highest_Card
                     dis=card
+                    d=False
                 elif d:
                     d=False
                     dis=card
-                    if int(card[0:2])>Value:
+                    if int(card[0:2])>int(highest_Card[0:2]):
                         highest_card=card
                         b=False
                     else:
-                        highest_card=Card_played1
+                        highest_card=highest_Card
+            elif card[2]=='S' and a:
+                if int(card[0:2])<int(dis[0:2]) and dis[2]=='S':
+                    dis=card
+                    highest_card=card
+                elif dis[2]!='S':
+                    dis=card
+                    highest_card=card
+                c=False
+            elif c:
+                if int(card[0:2])<int(dis[0:2]) and dis[2]!='t':
+                    dis=card
+                    highest_card=highest_Card
+                elif dis[2]=='t':
+                    dis=card
+                    highest_card=highest_Card
                     
             elif card[2]=='S' and a:
                 if int(card[0:2])<int(dis[0:2]) and dis[2]=='S':
@@ -209,6 +217,7 @@ def computer_player(highest_Card,Card_played1,Suit, Value, Cards,x,y, rotate,n):
 
 
 def maingame():
+    
     
     a='j'
     shufflecards1,shufflecards2,shufflecards3,shufflecards4=cardsShuffle()
@@ -246,14 +255,22 @@ def maingame():
     start_sound.stop()
     a,b,c,d,e,f,g,h,i,j,k,l,m=90,160,230,300,370,440,510,580,650,720,790,860,930
     s1,s2,s3,s4=0,0,0,0
-    last_time=pygame.time.get_ticks()
+    cn1,cn2,cn3,cn4=0,0,0,0
+    
     count_number=0
+    shuffle_sound.play()
     while True:
+            player_1=font.render('player | ({}/{})'.format(s1,cn1),False,'Black')
+            bot_1= font.render('bot 1 | ({}/{})'.format(s2,cn2),False,'Black')
+            bot_2= font.render('bot 2 | ({}/{})'.format(s3,cn3),False,'Black')
+            bot_3= font.render('bot 3 | ({}/{})'.format(s4,cn4),False,'Black')
+            last_time=pygame.time.get_ticks()
         
             
         
-        #now inserting the picture in the game 
+            #now inserting the picture in the game 
             screen.blit(Table_top,(0,0))
+            screen.blit(player_1,player_1.get_rect(midtop=(500,400)))
             screen.blit(bot_1,bot_1.get_rect(topright=(920,300)))
             screen.blit(bot_2,bot_2.get_rect(topleft=(500,80)))
             screen.blit(bot_3,bot_3.get_rect(topleft=(80,300)))
@@ -261,34 +278,37 @@ def maingame():
             screen.blit(pygame.transform.rotate(bot,-90),bot.get_rect(midtop=(500,5)))
             screen.blit(pygame.transform.rotate(bot,-180),bot.get_rect(midright=(995,300)))
             mouse_pos=pygame.mouse.get_pos()
+            
             # 1st card
             dis1=pygame.image.load('PNG/'+shufflecards1[0])
             disp1=pygame.transform.scale(dis1,((dis1.get_width())*0.09,(dis1.get_height())*0.09)).convert_alpha()
             recta1=disp1.get_rect(midbottom=(a,550))
+            
             if recta1.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
                 
-                screen.blit(disp1,disp1.get_rect(midbottom=(370,300)))
-                dis, highest_card=computer_player(shufflecards1[0],shufflecards1[0],shufflecards1[0][2],int(shufflecards1[0][0:2]), shufflecards2, 440,300,0,0)
-                dis1, highest_card=computer_player(highest_card,dis,shufflecards1[0][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2, highest_card=computer_player(highest_card,dis1,shufflecards1[0][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
-                current_time=pygame.time.get_ticks()
+                screen.blit(disp1,disp1.get_rect(midtop=(500,300)))
+                dis, highest_card=computer_player(shufflecards1[0],shufflecards1[0],shufflecards1[0][2],int(shufflecards1[0][0:2]), shufflecards2, 565,350,90,0)
+                dis1, highest_card=computer_player(highest_card,dis,shufflecards1[0][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2, highest_card=computer_player(highest_card,dis1,shufflecards1[0][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
+                
                 
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown :
-                    last_time=current_time
+                
+                while current_time - last_time<= animation_cooldown :
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
                     
                     
-                    
-                        
-                    
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    a=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                a=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                
+                count_played+=1
+                last_time=current_time
+                
                     
             else:
                 screen.blit(disp1,recta1)
@@ -299,20 +319,22 @@ def maingame():
             recta2=disp2.get_rect(midbottom=(b,550))
             if recta2.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp2,disp2.get_rect(midbottom=(b,300)))
-                dis, highest_card=computer_player(shufflecards1[1],shufflecards1[1],shufflecards1[1][2],int(shufflecards1[1][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[1][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[1][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp2,disp2.get_rect(midtop=(500,300)))
+                dis, highest_card=computer_player(shufflecards1[1],shufflecards1[1],shufflecards1[1][2],int(shufflecards1[1][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[1][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[1][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    b=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
-                    
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                b=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
+                
             else:
                 screen.blit(disp2,recta2)
             #3rd card
@@ -322,19 +344,21 @@ def maingame():
             if recta3.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
             
-                screen.blit(disp3,disp3.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[2],shufflecards1[2],shufflecards1[2][2],int(shufflecards1[2][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[2][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[2][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp3,disp3.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[2],shufflecards1[2],shufflecards1[2][2],int(shufflecards1[2][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[2][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[2][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    c=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                c=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp3,recta3)
@@ -346,19 +370,22 @@ def maingame():
             if recta4.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
             
-                screen.blit(disp4,disp4.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[3],shufflecards1[3],shufflecards1[3][2],int(shufflecards1[3][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[3][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[3][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp4,disp4.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[3],shufflecards1[3],shufflecards1[3][2],int(shufflecards1[3][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[3][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[3][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    d=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                    
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                d=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp4,recta4)
@@ -368,19 +395,21 @@ def maingame():
             recta5=disp5.get_rect(midbottom=(e,550))
             if recta5.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp5,disp5.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[4],shufflecards1[4],shufflecards1[4][2],int(shufflecards1[5][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[4][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[4][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp5,disp5.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[4],shufflecards1[4],shufflecards1[4][2],int(shufflecards1[5][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[4][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[4][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    e=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                e=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp5,recta5)
@@ -391,19 +420,21 @@ def maingame():
             recta6=disp6.get_rect(midbottom=(f,550))
             if recta6.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp6,disp6.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[5],shufflecards1[5],shufflecards1[5][2],int(shufflecards1[5][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[5][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[5][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp6,disp6.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[5],shufflecards1[5],shufflecards1[5][2],int(shufflecards1[5][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[5][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[5][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    f=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                f=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp6,recta6)
@@ -415,19 +446,21 @@ def maingame():
             recta7=disp7.get_rect(midbottom=(g,550))
             if recta7.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp7,disp7.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[6],shufflecards1[6],shufflecards1[6][2],int(shufflecards1[6][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[6][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[6][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp7,disp7.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[6],shufflecards1[6],shufflecards1[6][2],int(shufflecards1[6][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[6][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[6][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    g=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                g=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp7,recta7)
@@ -438,19 +471,21 @@ def maingame():
             recta8=disp8.get_rect(midbottom=(h,550))
             if recta8.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play() 
-                screen.blit(disp8,disp8.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[7],shufflecards1[7],shufflecards1[7][2],int(shufflecards1[7][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[7][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[7][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp8,disp8.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[7],shufflecards1[7],shufflecards1[7][2],int(shufflecards1[7][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[7][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[7][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    h=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                h=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp8,recta8)
@@ -461,19 +496,21 @@ def maingame():
             recta9=disp9.get_rect(midbottom=(i,550))
             if recta9.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp9,disp9.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[8],shufflecards1[8],shufflecards1[8][2],int(shufflecards1[8][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[8][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[8][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp9,disp9.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[8],shufflecards1[8],shufflecards1[8][2],int(shufflecards1[8][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[8][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[8][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    i=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                i=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp9,recta9)
@@ -484,19 +521,21 @@ def maingame():
             recta10=disp10.get_rect(midbottom=(j,550))
             if recta10.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp10,disp10.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[9],shufflecards1[9],shufflecards1[9][2],int(shufflecards1[9][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[9][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[9][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp10,disp10.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[9],shufflecards1[9],shufflecards1[9][2],int(shufflecards1[9][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[9][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[9][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    j=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                j=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp10,recta10)
@@ -507,19 +546,21 @@ def maingame():
             recta11=disp11.get_rect(midbottom=(k,550))
             if recta11.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp11,disp11.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[10],shufflecards1[10],shufflecards1[10][2],int(shufflecards1[10][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[10][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[10][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp11,disp11.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[10],shufflecards1[10],shufflecards1[10][2],int(shufflecards1[10][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[10][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[10][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    k=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                k=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp11,recta11)
@@ -530,19 +571,21 @@ def maingame():
             recta12=disp12.get_rect(midbottom=(l,550))
             if recta12.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
-                screen.blit(disp12,disp12.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[11],shufflecards1[11],shufflecards1[11][2],int(shufflecards1[11][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[11][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[11][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp12,disp12.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[11],shufflecards1[11],shufflecards1[11][2],int(shufflecards1[11][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[11][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[11][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    l=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                l=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp12,recta12)
@@ -556,19 +599,21 @@ def maingame():
             if recta13.collidepoint(mouse_pos)and (True in pygame.mouse.get_pressed()) :
                 click_sound.play()
             
-                screen.blit(disp13,disp13.get_rect(midbottom=(370,300)))
-                dis,highest_card=computer_player(shufflecards1[12],shufflecards1[12],shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards2, 440,300,0,0)
-                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[12][2],int(dis[0:2]), shufflecards3, 510,300,0,1)
-                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[12][2],int(dis1[0:2]), shufflecards4, 580,300,0,2)
+                screen.blit(disp13,disp13.get_rect(midtop=(500,300)))
+                dis,highest_card=computer_player(shufflecards1[12],shufflecards1[12],shufflecards1[12][2],int(shufflecards1[12][0:2]), shufflecards2, 565,350,90,0)
+                dis1,highest_card=computer_player(highest_card,dis,shufflecards1[12][2],int(dis[0:2]), shufflecards3, 500,280,180,1)
+                dis2,highest_card=computer_player(highest_card,dis1,shufflecards1[12][2],int(dis1[0:2]), shufflecards4, 400,350,270,2)
                 current_time=pygame.time.get_ticks()
-                if current_time - last_time>= animation_cooldown:
-                    s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
-                    m=10000
-                    shufflecards2.remove(dis)
-                    shufflecards3.remove(dis1)
-                    shufflecards4.remove(dis2)
-                    last_time=current_time
-                    count_played+=1
+                while current_time - last_time<= animation_cooldown:
+                    pygame.display.flip()
+                    current_time=pygame.time.get_ticks()
+                s1,s2,s3,s4=scorecount(s1,s2,s3,s4, highest_card,shufflecards1,shufflecards2,shufflecards3,shufflecards4)
+                m=10000
+                shufflecards2.remove(dis)
+                shufflecards3.remove(dis1)
+                shufflecards4.remove(dis2)
+                last_time=current_time
+                count_played+=1
                     
             else:
                 screen.blit(disp13,recta13)
@@ -664,11 +709,11 @@ def maingame():
             
             
 
-            other_playe_score=font.render('Bot1 score{}. Bot2 score{}. Bot3 score{}. Player score{}.'.format(s2,s3,s4,s1),True,'Black')
+            other_playe_score=font.render('Bot1 score({}). Bot2 score({}). Bot3 score({}). Player score({}).'.format(s2,s3,s4,s1),True,'Black')
             screen.blit(other_playe_score,(100,200))
-            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(100,200)))
-            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(100,200)),6)
-            screen.blit(other_playe_score,(other_playe_score.get_rect(topleft=(100,200))))
+            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(20,200)))
+            pygame.draw.rect(screen,"White",other_playe_score.get_rect(topleft=(20,200)),6)
+            screen.blit(other_playe_score,(other_playe_score.get_rect(topleft=(20,200))))
             restart=font.render("Press space to restart the game",True,"Black").convert_alpha()
             rectangle=restart.get_rect(midbottom=(450,550))
             screen.blit(restart, rectangle)
