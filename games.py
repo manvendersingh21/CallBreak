@@ -3,7 +3,6 @@ from sys import exit
 from PIL import Image
 import random
 
-    
 pygame.init()
 #set Game resolution
 screen = pygame.display.set_mode((1000,600))
